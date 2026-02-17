@@ -19,5 +19,6 @@ router.post('/link-firebase', verifyJWT, firebaseAuthController.linkFirebase);
 
 // User info
 router.get('/me', verifyJWT, authController.getMe);
+router.patch('/profile', verifyJWT, authController.updateProfile);
 
 module.exports = router;

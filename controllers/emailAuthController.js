@@ -108,7 +108,7 @@ exports.sendCode = async (req, res, next) => {
  */
 exports.verifyCode = async (req, res, next) => {
     try {
-        const { email, code, name, language = 'en' } = req.body;
+        const { email, code, firstName, lastName, dateOfBirth, language = 'en' } = req.body;
 
         // Validate input
         if (!email || !code) {
@@ -154,17 +154,19 @@ exports.verifyCode = async (req, res, next) => {
 
         if (!user) {
             // Create new user
-            if (!name) {
+            if (!firstName || !lastName || !dateOfBirth) {
                 return res.status(400).json({
                     success: false,
                     error: 'ValidationError',
-                    message: 'Name is required for new users'
+                    message: 'First name, last name, and date of birth are required for new users'
                 });
             }
 
             user = await User.create({
                 email: email.toLowerCase(),
-                name,
+                firstName,
+                lastName,
+                dateOfBirth: new Date(dateOfBirth),
                 language,
                 authProvider: 'email',
                 emailVerified: true
@@ -192,7 +194,10 @@ exports.verifyCode = async (req, res, next) => {
                 user: {
                     id: user._id,
                     email: user.email,
-                    name: user.name,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dateOfBirth: user.dateOfBirth,
+                    age: user.age,
                     language: user.language,
                     authProvider: user.authProvider,
                     emailVerified: user.emailVerified

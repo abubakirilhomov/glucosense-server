@@ -58,9 +58,19 @@ exports.firebaseAuth = async (req, res, next) => {
             }
 
             // Create new user
+            // Parse name into firstName and lastName
+            const nameParts = (name || 'User').trim().split(' ');
+            const firstName = nameParts[0] || 'User';
+            const lastName = nameParts.slice(1).join(' ') || 'User';
+
+            // Set placeholder dateOfBirth (required field, user can update later)
+            const defaultDate = new Date('2000-01-01');
+
             user = await User.create({
                 email: email?.toLowerCase(),
-                name: name || 'User',
+                firstName,
+                lastName,
+                dateOfBirth: defaultDate,
                 language,
                 authProvider,
                 firebaseUid: uid,
@@ -77,9 +87,21 @@ exports.firebaseAuth = async (req, res, next) => {
                 updated = true;
             }
 
-            if (name && user.name !== name) {
-                user.name = name;
-                updated = true;
+            // Update firstName/lastName if name changed
+            if (name) {
+                const nameParts = name.trim().split(' ');
+                const newFirstName = nameParts[0] || 'User';
+                const newLastName = nameParts.slice(1).join(' ') || 'User';
+
+                if (user.firstName !== newFirstName) {
+                    user.firstName = newFirstName;
+                    updated = true;
+                }
+
+                if (user.lastName !== newLastName) {
+                    user.lastName = newLastName;
+                    updated = true;
+                }
             }
 
             if (picture && user.profilePhoto !== picture) {
@@ -111,7 +133,10 @@ exports.firebaseAuth = async (req, res, next) => {
                 user: {
                     id: user._id,
                     email: user.email,
-                    name: user.name,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dateOfBirth: user.dateOfBirth,
+                    age: user.age,
                     language: user.language,
                     authProvider: user.authProvider,
                     emailVerified: user.emailVerified,
@@ -178,7 +203,10 @@ exports.linkFirebase = async (req, res, next) => {
                 user: {
                     id: user._id,
                     email: user.email,
-                    name: user.name,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dateOfBirth: user.dateOfBirth,
+                    age: user.age,
                     firebaseUid: user.firebaseUid,
                     emailVerified: user.emailVerified
                 }

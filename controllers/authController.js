@@ -5,14 +5,14 @@ const User = require('../models/User');
 // Register new user
 exports.register = async (req, res, next) => {
     try {
-        const { email, password, name, language } = req.body;
+        const { email, password, firstName, lastName, dateOfBirth, language } = req.body;
         console.log(req.body)
         // Validate input
-        if (!email || !password || !name) {
+        if (!email || !password || !firstName || !lastName || !dateOfBirth) {
             return res.status(400).json({
                 success: false,
                 error: 'ValidationError',
-                message: 'Email, password, and name are required'
+                message: 'Email, password, firstName, lastName, and dateOfBirth are required'
             });
         }
 
@@ -33,7 +33,9 @@ exports.register = async (req, res, next) => {
         const user = await User.create({
             email: email.toLowerCase(),
             password: hashedPassword,
-            name,
+            firstName,
+            lastName,
+            dateOfBirth: new Date(dateOfBirth),
             language: language || 'en'
         });
 
@@ -51,7 +53,10 @@ exports.register = async (req, res, next) => {
                 user: {
                     id: user._id,
                     email: user.email,
-                    name: user.name
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dateOfBirth: user.dateOfBirth,
+                    age: user.age
                 }
             },
             message: 'User registered successfully'
@@ -109,7 +114,10 @@ exports.login = async (req, res, next) => {
                 user: {
                     id: user._id,
                     email: user.email,
-                    name: user.name
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dateOfBirth: user.dateOfBirth,
+                    age: user.age
                 }
             },
             message: 'Login successful'
@@ -138,10 +146,66 @@ exports.getMe = async (req, res, next) => {
                 user: {
                     id: user._id,
                     email: user.email,
-                    name: user.name,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dateOfBirth: user.dateOfBirth,
+                    age: user.age,
                     language: user.language
                 }
             }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Update user profile
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const { dateOfBirth, firstName, lastName, language } = req.body;
+        const userId = req.userId; // From auth middleware
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'NotFoundError',
+                message: 'User not found'
+            });
+        }
+
+        // Update fields if provided
+        if (dateOfBirth) {
+            user.dateOfBirth = new Date(dateOfBirth);
+        }
+        if (firstName) {
+            user.firstName = firstName;
+        }
+        if (lastName) {
+            user.lastName = lastName;
+        }
+        if (language) {
+            user.language = language;
+        }
+
+        await user.save();
+
+        res.json({
+            success: true,
+            data: {
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    dateOfBirth: user.dateOfBirth,
+                    age: user.age,
+                    language: user.language,
+                    profilePhoto: user.profilePhoto
+                }
+            },
+            message: 'Profile updated successfully'
         });
     } catch (error) {
         next(error);
