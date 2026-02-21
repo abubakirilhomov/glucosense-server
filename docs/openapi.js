@@ -11,7 +11,7 @@ module.exports = {
             description: 'Local development server'
         },
         {
-            url: 'https://glucosense-server.onrender.com/',
+            url: 'https://glucosense-server.onrender.com',
             description: 'Production server'
         },
     ],
