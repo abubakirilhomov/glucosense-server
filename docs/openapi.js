@@ -9,7 +9,11 @@ module.exports = {
         {
             url: 'http://localhost:5000',
             description: 'Local development server'
-        }
+        },
+        {
+            url: 'https://glucosense-server.onrender.com/',
+            description: 'Production server'
+        },
     ],
     tags: [
         { name: 'Health' },
