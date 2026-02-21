@@ -60,6 +60,8 @@ EMAIL_FROM_NAME=GlucoSense
 # --- Verification Code Settings ---
 VERIFICATION_CODE_EXPIRY=600000
 VERIFICATION_CODE_LENGTH=6
+# Temporarily disabled by default. Set to true to re-enable /api/auth/send-code and /api/auth/verify-code.
+ENABLE_EMAIL_CODE_AUTH=false
 
 # ============================================
 # FIREBASE CONFIGURATION
@@ -158,6 +160,7 @@ After configuring, test that everything works:
 npm run dev
 
 # Test email (replace with your email)
+# NOTE: set ENABLE_EMAIL_CODE_AUTH=true first
 curl -X POST http://localhost:5000/api/auth/send-code \
   -H "Content-Type: application/json" \
   -d '{"email":"your-email@gmail.com"}'

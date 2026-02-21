@@ -124,6 +124,7 @@ EMAIL_FROM_NAME=GlucoSense
 ```bash
 VERIFICATION_CODE_EXPIRY=600000  # 10 minutes in milliseconds
 VERIFICATION_CODE_LENGTH=6       # Length of verification code
+ENABLE_EMAIL_CODE_AUTH=false     # Set true to enable /api/auth/send-code and /api/auth/verify-code
 ```
 
 ---
@@ -212,6 +213,7 @@ EMAIL_FROM=glucosense@gmail.com
 EMAIL_FROM_NAME=GlucoSense
 VERIFICATION_CODE_EXPIRY=600000
 VERIFICATION_CODE_LENGTH=6
+ENABLE_EMAIL_CODE_AUTH=false
 
 # Firebase
 FIREBASE_SERVICE_ACCOUNT_PATH=./config/firebase-service-account.json
@@ -222,6 +224,12 @@ FIREBASE_SERVICE_ACCOUNT_PATH=./config/firebase-service-account.json
 ## Testing Your Configuration
 
 ### Test Email Sending
+
+First, enable it in `.env`:
+
+```bash
+ENABLE_EMAIL_CODE_AUTH=true
+```
 
 ```bash
 curl -X POST http://localhost:5000/api/auth/send-code \

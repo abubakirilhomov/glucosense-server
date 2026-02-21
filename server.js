@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const openApiSpec = require('./docs/openapi');
 const errorHandler = require('./middleware/errorHandler');
 
 // Initialize Firebase Admin (if configured)
@@ -18,9 +20,23 @@ const carbRoutes = require('./routes/carbRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// API docs
+app.get('/api-docs.json', (req, res) => {
+    res.json(openApiSpec);
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec, {
+    explorer: true,
+    customSiteTitle: 'GlucoSense API Docs'
+}));
 
 // Routes
 app.use('/api/auth', authRoutes);

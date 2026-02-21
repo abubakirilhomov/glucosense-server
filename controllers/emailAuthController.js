@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 // Rate limiting storage (in production, use Redis)
 const rateLimitStore = new Map();
+const isEmailCodeAuthEnabled = process.env.ENABLE_EMAIL_CODE_AUTH === 'true';
 
 /**
  * Check rate limit for email
@@ -37,6 +38,14 @@ function checkRateLimit(email) {
  */
 exports.sendCode = async (req, res, next) => {
     try {
+        if (!isEmailCodeAuthEnabled) {
+            return res.status(503).json({
+                success: false,
+                error: 'FeatureDisabled',
+                message: 'Email code authentication is temporarily disabled'
+            });
+        }
+
         const { email, language = 'en' } = req.body;
 
         // Validate input
@@ -108,6 +117,14 @@ exports.sendCode = async (req, res, next) => {
  */
 exports.verifyCode = async (req, res, next) => {
     try {
+        if (!isEmailCodeAuthEnabled) {
+            return res.status(503).json({
+                success: false,
+                error: 'FeatureDisabled',
+                message: 'Email code authentication is temporarily disabled'
+            });
+        }
+
         const { email, code, firstName, lastName, dateOfBirth, language = 'en' } = req.body;
 
         // Validate input
